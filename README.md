@@ -4,6 +4,14 @@ A kanban-style task management board built as a full-stack frontend assessment. 
 
 ---
 
+## Preview
+
+| Dark Mode | Light Mode |
+|---|---|
+| ![Dark Mode](public/dark-mode-taskboard.png) | ![Light Mode](public/white-mode-taskboard.png) |
+
+---
+
 ## Quick Start
 
 ```bash
