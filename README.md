@@ -2,6 +2,8 @@
 
 A kanban-style task management board built as a full-stack frontend assessment. Covers all three parts of the spec: core kanban UI (Part 1), optimistic updates + real-time simulation + virtualization (Part 2), and an undo/redo system (Part 3 — Option A).
 
+**Live Demo:** [real-time-collaborative-task-board-bice.vercel.app](https://real-time-collaborative-task-board-bice.vercel.app/)
+
 ---
 
 ## Preview
