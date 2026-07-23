@@ -235,13 +235,11 @@ useEffect(() => {
 
 ## Assumptions & Adaptations
 
-The spec encourages judgment calls on ambiguous requirements. Three decisions worth documenting:
+The spec encourages judgment calls on ambiguous requirements. Two decisions worth noting:
 
-- **Tag filter uses AND logic.** The spec says "filter by tags" with no logic specified. AND was chosen over OR because it narrows results as more tags are selected — matching how users think of "show me tasks that are both `frontend` AND `urgent`." OR would progressively show more, making the filter less useful.
+- **Tag filter uses AND logic.** Selecting multiple tags narrows results to tasks that match all of them — making it easier to find exactly what you're looking for. The more tags you add, the more focused the list becomes.
 
-- **History records committed reality only.** The undo/redo system and optimistic updates are described in separate sections with no explicit rule about their interaction. `pushHistory()` is called only after the API confirms success — rolled-back operations are never recorded. Recording intent rather than outcome would allow undoing something that never actually happened.
-
-- **Conflict detection as a warning toast.** The spec says "handle merge conflicts if user is editing the same task." Full merge resolution (keep mine / take theirs) is Part 3 Option C — a separate expert challenge. For Option A, the honest interpretation is surfacing the conflict clearly via a warning toast so the user is aware, without building a UI that belongs to a different option.
+- **shadcn/ui chosen for accessible, themeable UI components.** The spec requires a modal, dropdowns, and form inputs. Rather than building these from scratch, shadcn/ui provides fully accessible Radix-based components — keyboard navigation, focus trapping, and screen reader support included out of the box. The CSS variable system in `index.css` is what powers it: semantic tokens like `--background` and `--destructive` mean every component automatically adapts to light or dark mode with no per-component colour logic needed.
 
 ---
 
