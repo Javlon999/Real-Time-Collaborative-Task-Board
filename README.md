@@ -233,6 +233,54 @@ useEffect(() => {
 
 ---
 
+## Assumptions & Adaptations
+
+The spec explicitly encourages judgment calls on ambiguous requirements. Here is every significant adaptation made, and the reasoning behind each.
+
+### 1. 1000 tasks pre-loaded on startup
+
+**Spec:** "The task list should support 1000+ tasks efficiently."
+**Decision:** Pre-seed 1000 tasks into the store on first load rather than requiring the user to create them manually.
+**Why:** The requirement is about proving virtualization works at scale. Leaving it to the user to create 1000 tasks would make the feature impossible to verify in practice. Pre-seeding makes the performance guarantee immediately visible and testable.
+
+### 2. Tag filter uses AND logic
+
+**Spec:** "Filter by tags" — no logic specified.
+**Decision:** A task must match ALL selected tags to appear (AND logic), not just one (OR logic).
+**Why:** OR logic would make the filter progressively less useful as more tags are selected — eventually showing nearly everything. AND logic narrows results as expected, matching how most users mentally model "show me tasks that are both frontend AND urgent."
+
+### 3. History records committed reality only
+
+**Spec:** Undo/redo system and optimistic updates are described in separate sections with no explicit rule about their interaction.
+**Decision:** `pushHistory()` is called only after the API confirms success. Rolled-back operations are never added to the history stack.
+**Why:** The alternative — recording intent rather than outcome — would allow undoing an action that never actually happened, leaving the UI in an impossible state. History should always represent what did happen, not what was attempted.
+
+### 4. Conflict detection interpreted as a warning toast
+
+**Spec:** "Handle merge conflicts if user is editing the same task."
+**Decision:** When the real-time simulator changes a task that is currently open in the edit modal, a warning toast is shown: "This task was just changed by [user]."
+**Why:** Full merge resolution (keep mine / take theirs / merge manually) is Part 3 Option C — a separate expert challenge. For Option A the most honest interpretation is surfacing the conflict clearly so the user is aware, without implementing a separate conflict resolution UI that belongs to a different option.
+
+### 5. Per-closure snapshots for concurrent operation safety
+
+**Spec:** "Implement optimistic updates when changing task status." No mention of concurrency.
+**Decision:** Each hook closure captures its own `structuredClone` snapshot at call time rather than relying on the single shared `_snapshot` slot in the store.
+**Why:** The spec doesn't mention concurrent operations, but they are a natural consequence of a 10% failure rate and 2-second delays — two operations on different cards can easily overlap. Using a shared snapshot slot would cause the second operation's rollback to restore the wrong state. Per-closure snapshots make each operation independently safe without any extra user-visible complexity.
+
+### 6. Dark mode added as a bonus
+
+**Spec:** Not mentioned anywhere in the requirements.
+**Decision:** Implemented dark mode with `localStorage` persistence and OS preference detection (`prefers-color-scheme`).
+**Why:** The project uses shadcn/ui which is built on a CSS variable system that makes dark mode essentially free — it required no extra dependencies and minimal code. It demonstrates attention to production-quality UX details beyond the spec.
+
+### 7. Error boundaries added around key surfaces
+
+**Spec:** Not mentioned.
+**Decision:** `<ErrorBoundary>` wraps `BoardView` and `TaskModal` with a "Try again" fallback UI.
+**Why:** Any production React app rendering complex UI with external state should be protected from unexpected render errors. A crashed virtualized column or modal should not bring down the entire page. This is standard defensive practice, not over-engineering.
+
+---
+
 ## Performance
 
 | Concern | Implementation |
