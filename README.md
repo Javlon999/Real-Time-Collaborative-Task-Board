@@ -54,6 +54,44 @@ npx tsc --noEmit  # 0 type errors
 
 ---
 
+## Accessibility
+
+The board is fully operable without a mouse. All interactive elements are keyboard-accessible, and screen reader support is built in throughout.
+
+### Keyboard Shortcuts
+
+| Shortcut | Action |
+|---|---|
+| `Ctrl / Cmd + Z` | Undo last action |
+| `Ctrl / Cmd + Shift + Z` | Redo |
+| `Ctrl + Y` | Redo (Windows alias) |
+| `Tab` | Move focus between cards and controls |
+| `Space` | Lift a focused card to begin dragging / drop it |
+| `Arrow keys` | Move a lifted card between columns or positions |
+| `Enter` | Open the edit modal on a focused card |
+| `Escape` | Cancel an active drag and return card to its original position |
+
+> Undo/Redo shortcuts are suppressed when focus is inside a text input or textarea — they never conflict with native browser undo.
+
+### Screen Reader Support
+
+- **Drag-and-drop announcements** — every drag event is narrated: pickup instructions, column-over updates, drop confirmation, and cancel message
+- **Undo/Redo labels** — the History Indicator uses `aria-live="polite"` + `aria-atomic="true"` so the action label is announced after every committed change, undo, or redo
+- **Toast notifications** — each toast uses `role="alert"` for immediate announcement of API results, real-time changes, and conflict warnings
+- **Column landmarks** — each column is a `role="region"` with a label; the task list inside is `role="list"` with `role="listitem"` on each card so screen readers announce position ("2 of 30")
+- **Form validation** — required fields use `aria-required`, errors set `aria-invalid` and `aria-describedby` pointing to the inline error message
+- **Undo/Redo buttons** — dynamic `aria-label` reflects the exact action: `"Undo: Moved 'Fix bug' to Done"` or `"Nothing to undo"`
+- **Simulator toggle** — uses `aria-pressed` to reflect active/inactive state correctly
+
+### Other
+
+- Single tab stop per card — `SortableTaskCard` prevents the inner `<article>` from creating a duplicate focus trap
+- Focus is trapped inside the modal while open and returned to the trigger element on close (WAI-ARIA Dialog pattern via Radix)
+- Visible focus rings on all interactive elements (keyboard-only — not shown on mouse click)
+- All decorative icons are `aria-hidden="true"` — they are never announced by screen readers
+
+---
+
 ## Tech Stack
 
 | Library | Version | Why chosen | Rejected alternative |
